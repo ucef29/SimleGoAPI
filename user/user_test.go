@@ -14,6 +14,20 @@ func TestMain(m *testing.M) {
 	os.Remove(dbPath)
 }
 
+func cleanDb(b *testing.B) {
+	os.Remove(dbPath)
+	u := &User{
+		ID: bson.NewObjectId(),
+		Name: "John",
+		Role: "Tester",
+	}
+	err := u.Save()
+	if err != nil {
+		b.Fatalf("Error saving a record: %s", err)
+	}
+	b.ResetTimer()
+}
+
 func TestCRUD(t *testing.T) {
 	t.Log("Create")
 	u := &User{
