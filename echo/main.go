@@ -79,7 +79,6 @@ func userGetOne(c echo.Context) error {
 		}
 		return c.NoContent(http.StatusNotFound)
 	}
-	c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
 	return c.JSON(http.StatusOK, jsonResponse{"user": u})
 }
 
@@ -101,8 +100,7 @@ func usersPutOne(c echo.Context) error {
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
-	cache.Drop("/users")
-	c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
+
 	return c.JSON(http.StatusOK, jsonResponse{"user": u})
 }
 
@@ -125,8 +123,6 @@ func usersPatchOne(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 
 	}
-	cache.Drop("/users")
-	c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
 	return c.JSON(http.StatusOK, jsonResponse{"user": u})
 }
 
@@ -143,8 +139,6 @@ func usersDeleteOne(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	cache.Drop("/users")
-	c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
 	return c.NoContent(http.StatusOK)
 
 }
@@ -163,9 +157,9 @@ func main() {
 
 	uid := u.Group("/:id")
 	uid.OPTIONS("", usersOptions)
-	uid.GET("", userGetOne, serveCache) // calling the serveCache middleWare
-	uid.PUT("", usersPutOne)
-	uid.PATCH("", usersPatchOne)
+	uid.GET("", userGetOne, serveCache, cacheResponse) // calling the serveCache and cacheResponse middleWares
+	uid.PUT("", usersPutOne, cacheResponse)            // could add multiple middleWares exec left -> rigjt
+	uid.PATCH("", usersPatchOne, cacheResponse)
 	uid.DELETE("", usersDeleteOne)
 
 	e.Start(":12345")
