@@ -12,4 +12,3 @@ BenchmarkGetAllCached-4           200000              6941 ns/op
 PASS
 ok      SimpleGoAPI/handlers    7.940s
 ```
-You can see that caching reduce the latency a lot!
