@@ -24,6 +24,13 @@ func serveCache(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func cacheResponse(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
+		return next(c)
+	}
+}
+
 func usersOptions(c echo.Context) error {
 	methods := []string{http.MethodGet, http.MethodPost, http.MethodOptions}
 	c.Response().Header().Set("Allow", strings.Join(methods, ","))
