@@ -1,4 +1,4 @@
-# SimleGoAPI
+# SimpleGoAPI
 
 #### cache vs no-cache benchMark
 ```
