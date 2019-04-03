@@ -1,6 +1,6 @@
 # SimleGoAPI
 
-#### cache benchMark
+#### cache vs no-cache benchMark
 ```
 # cd to handlers dir and run:
 
