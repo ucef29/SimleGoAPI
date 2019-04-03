@@ -1,6 +1,6 @@
 # SimleGoAPI
 
-### cache benchMark
+#### cache benchMark
 ```
 # cd to handlers dir and run:
 
@@ -13,7 +13,7 @@ BenchmarkGetAllCached-4           200000              6941 ns/op
 PASS
 ok      SimpleGoAPI/handlers    7.940s
 ```
-### using Echo(a powerfull Go web framework) to implement 3 middlewares
+#### using Echo(a powerfull Go web framework) to implement 3 middlewares
 ```
 func serveCache(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
