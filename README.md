@@ -13,19 +13,22 @@ PASS
 ok      SimpleGoAPI/handlers    7.940s
 ```
 ```
-# using Echo framework to implementing 3 middlewares
+# using Echo framework to implement 3 middlewares
+
+func serveCache(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if cache.Serve(c.Response(), c.Request()) {
+			return nil
+		}
+		return next(c)
+	}
+}
 
 func cacheResponse(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Response().Writer = cache.NewWriter(c.Response().Writer, c.Request())
 		return next(c)
 	}
-}
-
-func usersOptions(c echo.Context) error {
-	methods := []string{http.MethodGet, http.MethodPost, http.MethodOptions}
-	c.Response().Header().Set("Allow", strings.Join(methods, ","))
-	return c.NoContent(http.StatusOK)
 }
 
 func auth(username, password string, c echo.Context) (bool, error) {
