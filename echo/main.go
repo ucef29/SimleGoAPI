@@ -10,6 +10,7 @@ import (
 
 	"github.com/asdine/storm"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -147,20 +148,27 @@ func root(c echo.Context) error {
 	return c.String(http.StatusOK, "Running API v1")
 }
 
+func auth(username, password string, c echo.Context) (bool, error) {
+	if username == "joe" && password == "secret" {
+		return true, nil
+	}
+	return false, nil
+}
+
 func main() {
 	e := echo.New()
 	e.GET("/", root)
 
 	u := e.Group("/users")
 	u.OPTIONS("", usersOptions)
-	u.POST("", usersPostOne)
+	u.POST("", usersPostOne, middleware.BasicAuth(auth)) // implementing a basic auth middleWare
 
 	uid := u.Group("/:id")
 	uid.OPTIONS("", usersOptions)
-	uid.GET("", userGetOne, serveCache, cacheResponse) // calling the serveCache and cacheResponse middleWares
-	uid.PUT("", usersPutOne, cacheResponse)            // could add multiple middleWares exec left -> rigjt
-	uid.PATCH("", usersPatchOne, cacheResponse)
-	uid.DELETE("", usersDeleteOne)
+	uid.GET("", userGetOne, serveCache, cacheResponse)                  // calling the serveCache and cacheResponse middleWares
+	uid.PUT("", usersPutOne, middleware.BasicAuth(auth), cacheResponse) // could add multiple middleWares exec left -> rigjt
+	uid.PATCH("", usersPatchOne, middleware.BasicAuth(auth), cacheResponse)
+	uid.DELETE("", usersDeleteOne, middleware.BasicAuth(auth))
 
 	e.Start(":12345")
 }
